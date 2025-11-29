@@ -1,4 +1,5 @@
 # Portal Database Migration Tool
+**v1.0.0 Stable**
 
 [View Full Documentation (index.html)](./index.html)
 

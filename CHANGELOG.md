@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.0] - 2025-11-29
+
 ### Added
 - Implemented Configuration & Security (Config struct, AES encryption for credentials, init logic).
 - Implemented Storage & Metadata (Backup file layout, metadata.json, ListBackups).
