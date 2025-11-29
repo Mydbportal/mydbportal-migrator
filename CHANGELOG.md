@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved backup resilience: `BackupAll` now continues even if individual database backups fail (partial success).
 - Added retry logic (3 retries) for PostgreSQL backups to handle transient network errors (e.g., SSL SYSCALL error).
 - Metadata now records per-file status ("success" or "failed") and error messages.
+- Resolved MongoDB authentication error by passing password explicitly via flag instead of unreliable stdin piping.
 
 ### Removed
 
