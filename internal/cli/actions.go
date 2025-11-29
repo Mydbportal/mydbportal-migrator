@@ -75,13 +75,6 @@ func RunList(sourceID string) error {
 	fmt.Println(strings.Repeat("-", 80))
 
 	for _, b := range backups {
-		// Filter if sourceID is provided
-		if sourceID != "" {
-			// Assuming we map source ID to metadata somehow?
-			// Metadata has Host/Port but not Source ID from config.
-			// But the directory name includes Host.
-			// For now, simple listing.
-		}
 		fmt.Printf("% -25s | % -10s | % -20s | % -10s\n", b.Timestamp, b.Engine, b.Host, b.Status)
 	}
 	return nil
@@ -111,35 +104,65 @@ func RunBackup(sourceID string, dbName string) error {
 
 	fmt.Printf("Starting backup for %s to %s...\n", source.ID, path)
 
-	var backupFiles map[string]string
+	var backupResults []engine.BackupResult
+	
 	if dbName != "" {
-		// Single DB backup logic not fully implemented in engine interface separate from BackupAll return types
-		// But we can use BackupDatabase directly.
 		filename := fmt.Sprintf("%s_%s.sql.gz", dbName, tsStr)
 		destPath := filepath.Join(path, filename)
-		if err := eng.BackupDatabase(source, dbName, destPath); err != nil {
-			return err
-		}
-		backupFiles = map[string]string{dbName: filename}
+		
+		// Retry logic is now handled within Postgres engine, but for others or generic single calls:
+		err := eng.BackupDatabase(source, dbName, destPath)
+		backupResults = append(backupResults, engine.BackupResult{
+			Database: dbName,
+			Filename: filename,
+			Error:    err,
+		})
 	} else {
 		// Backup All
-		backupFiles, err = eng.BackupAll(source, path)
+		var err error
+		backupResults, err = eng.BackupAll(source, path)
 		if err != nil {
-			return err
+			return fmt.Errorf("critical failure listing/backing up databases: %w", err)
 		}
 	}
 
-	// Create Metadata
+	// Process Results
 	var files []storage.BackupFile
-	for _, filename := range backupFiles {
-		fullPath := filepath.Join(path, filename)
-		checksum, _ := util.ComputeChecksum(fullPath)
-		info, _ := os.Stat(fullPath)
-		files = append(files, storage.BackupFile{
-			Name:     filename,
-			Checksum: checksum,
-			Size:     info.Size(),
-		})
+	successCount := 0
+	failCount := 0
+
+	for _, res := range backupResults {
+		bf := storage.BackupFile{
+			Name: res.Filename,
+		}
+
+		if res.Error != nil {
+			bf.Status = "failed"
+			bf.Error = res.Error.Error()
+			failCount++
+			fmt.Printf(" [FAILED] %s: %v\n", res.Database, res.Error)
+		} else {
+			bf.Status = "success"
+			successCount++
+			fullPath := filepath.Join(path, res.Filename)
+			checksum, _ := util.ComputeChecksum(fullPath)
+			info, _ := os.Stat(fullPath)
+			bf.Checksum = checksum
+			if info != nil {
+				bf.Size = info.Size()
+			}
+			fmt.Printf(" [OK] %s\n", res.Database)
+		}
+		files = append(files, bf)
+	}
+
+	status := "success"
+	if failCount > 0 {
+		if successCount == 0 {
+			status = "failed"
+		} else {
+			status = "partial"
+		}
 	}
 
 	meta := storage.Metadata{
@@ -150,14 +173,14 @@ func RunBackup(sourceID string, dbName string) error {
 		User:      source.User,
 		Timestamp: tsStr,
 		Files:     files,
-		Status:    "success",
+		Status:    status,
 	}
 
 	if err := storage.WriteMetadata(path, meta); err != nil {
 		return err
 	}
 
-	fmt.Println("Backup completed successfully!")
+	fmt.Printf("Backup operation completed with status: %s\n", status)
 	return nil
 }
 
@@ -167,7 +190,7 @@ func RunRestore(backupPath string, targetID string) error {
 		return err
 	}
 	
-target, err := mgr.GetSource(targetID) // Using GetSource for target as well (same struct)
+target, err := mgr.GetSource(targetID)
 	if err != nil {
 		return err
 	}
@@ -178,11 +201,6 @@ target, err := mgr.GetSource(targetID) // Using GetSource for target as well (sa
 	}
 	
 	fmt.Printf("Restoring %s to %s (%s)...\n", backupPath, target.ID, target.Host)
-	
-	// Infer dbName from filename or ask?
-	// For now, pass empty dbName and let engine handle (e.g. MySQL/Postgres might need it, Mongo doesn't)
-	// If MySQL dump has --databases, it creates DB.
-	// If Postgres dump has -C, it creates DB.
 	
 	if err := eng.RestoreBackup(target, backupPath, ""); err != nil {
 		return err

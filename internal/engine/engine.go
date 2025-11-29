@@ -6,6 +6,13 @@ import (
 	"mydbportal.com/dbmigrate/internal/config"
 )
 
+// BackupResult holds result for a single database backup
+type BackupResult struct {
+	Database string
+	Filename string
+	Error    error
+}
+
 type Engine interface {
 	// ID returns the engine type identifier (e.g., "mysql")
 	ID() string
@@ -14,8 +21,8 @@ type Engine interface {
 	// BackupDatabase backs up a single database to the specified file path
 	BackupDatabase(creds config.ServerConfig, dbName string, destPath string) error
 	// BackupAll backs up all databases (or the cluster) to the specified directory
-	// Returns a map of dbName -> filePath for the created backups
-	BackupAll(creds config.ServerConfig, destDir string) (map[string]string, error)
+	// Returns a slice of BackupResult for each database processed
+	BackupAll(creds config.ServerConfig, destDir string) ([]BackupResult, error)
 	// RestoreBackup restores a backup file to the target
 	RestoreBackup(creds config.ServerConfig, filePath string, dbName string) error
 }

@@ -91,7 +91,7 @@ func (e *MongoEngine) BackupDatabase(creds config.ServerConfig, dbName string, d
 	return util.RunDumpToFile(cmd, destPath)
 }
 
-func (e *MongoEngine) BackupAll(creds config.ServerConfig, destDir string) (map[string]string, error) {
+func (e *MongoEngine) BackupAll(creds config.ServerConfig, destDir string) ([]engine.BackupResult, error) {
 	// mongodump --archive ... (dumps all)
 	// We only produce one file for Mongo "All" backup usually.
 	
@@ -111,11 +111,15 @@ func (e *MongoEngine) BackupAll(creds config.ServerConfig, destDir string) (map[
 	cmd := exec.Command("mongodump", args...)
 	cmd.Stdin = strings.NewReader(creds.Password + "\n")
 	
-	if err := util.RunDumpToFile(cmd, destPath); err != nil {
-		return nil, err
+	err := util.RunDumpToFile(cmd, destPath)
+	
+	res := engine.BackupResult{
+		Database: "all",
+		Filename: filename,
+		Error:    err,
 	}
 	
-	return map[string]string{"all": filename}, nil
+	return []engine.BackupResult{res}, nil
 }
 
 func (e *MongoEngine) RestoreBackup(creds config.ServerConfig, filePath string, dbName string) error {

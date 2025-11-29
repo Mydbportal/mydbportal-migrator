@@ -13,6 +13,8 @@ type BackupFile struct {
 	Name     string `json:"name"`
 	Checksum string `json:"checksum"`
 	Size     int64  `json:"size"`
+	Status   string `json:"status"` // success, failed
+	Error    string `json:"error,omitempty"`
 }
 
 type Metadata struct {
@@ -23,7 +25,7 @@ type Metadata struct {
 	User      string       `json:"user"`
 	Timestamp string       `json:"timestamp"` // ISO8601
 	Files     []BackupFile `json:"files"`
-	Status    string       `json:"status"` // success, failed
+	Status    string       `json:"status"` // success, partial, failed
 }
 
 // Root directory for backups

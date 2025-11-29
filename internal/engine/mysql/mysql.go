@@ -86,23 +86,27 @@ func (e *MySQLEngine) BackupDatabase(creds config.ServerConfig, dbName string, d
 	return util.RunDumpToFile(cmd, destPath)
 }
 
-func (e *MySQLEngine) BackupAll(creds config.ServerConfig, destDir string) (map[string]string, error) {
+func (e *MySQLEngine) BackupAll(creds config.ServerConfig, destDir string) ([]engine.BackupResult, error) {
 	dbs, err := e.ListDatabases(creds)
 	if err != nil {
 		return nil, err
 	}
 
-	results := make(map[string]string)
+	var results []engine.BackupResult
 	timestamp := time.Now().Format("2006-01-02T15:04:05Z")
 
 	for _, db := range dbs {
 		filename := fmt.Sprintf("%s_%s.sql.gz", db, timestamp)
 		destPath := filepath.Join(destDir, filename)
 		
-		if err := e.BackupDatabase(creds, db, destPath); err != nil {
-			return results, fmt.Errorf("failed to backup database %s: %w", db, err)
+		err := e.BackupDatabase(creds, db, destPath)
+		
+		res := engine.BackupResult{
+			Database: db,
+			Filename: filename,
+			Error:    err,
 		}
-		results[db] = filename // storing filename relative to dir
+		results = append(results, res)
 	}
 	return results, nil
 }
