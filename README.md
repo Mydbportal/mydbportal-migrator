@@ -1,4 +1,4 @@
-# DB-Migrate-Go
+# Portal Database Migration Tool
 
 A cross-database migration tool written in Go that supports backing up, storing, and restoring databases for MySQL, PostgreSQL, and MongoDB.
 
