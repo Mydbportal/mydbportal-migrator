@@ -3,7 +3,6 @@ package util
 import (
 	"compress/gzip"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 )

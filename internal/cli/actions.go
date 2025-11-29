@@ -66,11 +66,6 @@ func RunInit() error {
 }
 
 func RunList(sourceID string) error {
-	mgr, err := config.NewManager()
-	if err != nil {
-		return err
-	}
-
 	backups, err := storage.ListBackups()
 	if err != nil {
 		return err
