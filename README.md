@@ -1,8 +1,6 @@
 # Portal Database Migration Tool
 **v1.0.0 Stable**
 
-[View Full Documentation (index.html)](./index.html)
-
 A cross-database migration tool written in Go that supports backing up, storing, and restoring databases for MySQL, PostgreSQL, and MongoDB.
 
 ## Features
