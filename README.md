@@ -65,7 +65,7 @@ Restore a backup file to a target server:
 
 ## Configuration
 
-Configuration is stored in `~/.dbmigrate.json` (or `.gemini/config.json` in this environment). Credentials are encrypted.
+Configuration is stored in `~/.dbmigrate.json`. Credentials are encrypted.
 
 ## Project Structure
 
