@@ -64,22 +64,33 @@ func (e *MongoEngine) ListDatabases(creds config.ServerConfig) ([]string, error)
 }
 
 func (e *MongoEngine) BackupDatabase(creds config.ServerConfig, dbName string, destPath string) error {
-	// Use explicit password flag
-	args := []string{
-		"--host", creds.Host,
-		"--port", fmt.Sprintf("%d", creds.Port),
-		"--username", creds.User,
-		"--password", creds.Password,
-		"--authenticationDatabase", "admin",
-		"--archive",
-		"--db", dbName,
+	// Retry logic
+	maxRetries := 3
+	var lastErr error
+
+	for i := 0; i < maxRetries; i++ {
+		// Use explicit password flag
+		args := []string{
+			"--host", creds.Host,
+			"--port", fmt.Sprintf("%d", creds.Port),
+			"--username", creds.User,
+			"--password", creds.Password,
+			"--authenticationDatabase", "admin",
+			"--archive",
+			"--db", dbName,
+		}
+
+		cmd := exec.Command("mongodump", args...)
+		
+		lastErr = util.RunDumpToFile(cmd, destPath)
+		if lastErr == nil {
+			return nil
+		}
+		// If error, wait and retry
+		time.Sleep(time.Second * time.Duration(i+1))
 	}
 
-	cmd := exec.Command("mongodump", args...)
-	
-	// Stdin not needed for password
-	
-	return util.RunDumpToFile(cmd, destPath)
+	return lastErr
 }
 
 func (e *MongoEngine) BackupAll(creds config.ServerConfig, destDir string) ([]engine.BackupResult, error) {
@@ -89,24 +100,35 @@ func (e *MongoEngine) BackupAll(creds config.ServerConfig, destDir string) ([]en
 	filename := fmt.Sprintf("all-databases_%s.archive.gz", timestamp)
 	destPath := filepath.Join(destDir, filename)
 	
-	args := []string{
-		"--host", creds.Host,
-		"--port", fmt.Sprintf("%d", creds.Port),
-		"--username", creds.User,
-		"--password", creds.Password,
-		"--authenticationDatabase", "admin",
-		"--archive",
+	// Retry logic
+	maxRetries := 3
+	var lastErr error
+
+	for i := 0; i < maxRetries; i++ {
+		args := []string{
+			"--host", creds.Host,
+			"--port", fmt.Sprintf("%d", creds.Port),
+			"--username", creds.User,
+			"--password", creds.Password,
+			"--authenticationDatabase", "admin",
+			"--archive",
+		}
+		
+		cmd := exec.Command("mongodump", args...)
+		// Stdin not needed for password
+		
+		lastErr = util.RunDumpToFile(cmd, destPath)
+		if lastErr == nil {
+			break
+		}
+		// If error, wait and retry
+		time.Sleep(time.Second * time.Duration(i+1))
 	}
-	
-	cmd := exec.Command("mongodump", args...)
-	// Stdin not needed for password
-	
-	err := util.RunDumpToFile(cmd, destPath)
 	
 	res := engine.BackupResult{
 		Database: "all",
 		Filename: filename,
-		Error:    err,
+		Error:    lastErr,
 	}
 	
 	return []engine.BackupResult{res}, nil
