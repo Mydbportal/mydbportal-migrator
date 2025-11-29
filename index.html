@@ -1,220 +1,372 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Database Migrator | Secure Cross-Database Migration Tool</title>
+    <title>Portal DB Migrate | Enterprise Database Mobility</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151F32',
+                            950: '#020617',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(220, 38, 38, 0.15)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Grid Background Pattern */
-        .bg-grid-pattern {
+        /* Custom Utilities */
+        .bg-grid {
             background-size: 40px 40px;
-            background-image: 
-                linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .terminal-dots {
+            @apply w-3 h-3 rounded-full mr-2;
         }
     </style>
 </head>
-<body class="bg-white text-slate-900 font-sans antialiased selection:bg-red-100 selection:text-red-900 bg-grid-pattern">
+<body class="bg-slate-50 text-slate-900 font-sans antialiased bg-grid selection:bg-red-600 selection:text-white">
 
-    <!-- Navbar -->
-    <nav class="container mx-auto px-6 py-6 flex justify-between items-center bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-200">
-        <div class="text-2xl font-bold text-slate-900 tracking-tighter">
-            Portal Database <span class="text-red-600">Migrator</span>
-        </div>
-        <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-            <a href="#features" class="hover:text-red-600 transition-colors">Features</a>
-            <a href="#workflow" class="hover:text-red-600 transition-colors">Workflow</a>
-            <a href="#usage" class="hover:text-red-600 transition-colors">Usage</a>
-            <a href="https://github.com/yourusername/db-migrate-go" class="text-slate-900 hover:text-red-600 transition-colors font-bold">GitHub</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="container mx-auto px-6 py-20 md:py-32 text-center relative">
-        <div class="inline-block px-3 py-1 mb-6 text-xs font-semibold tracking-wider text-red-600 uppercase bg-red-50 rounded-full border border-red-200">
-            v1.0.0 Release
-        </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
-            Secure Database <br class="hidden md:block" />
-            <span class="text-slate-900">Migration & Backup</span>
-        </h1>
-        <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-            A powerful, cross-platform CLI tool written in Go. Backup, encrypt, and migrate databases across MySQL, PostgreSQL, and MongoDB with a single command.
-        </p>
-        <div class="flex justify-center space-x-4">
-            <a href="#usage" class="bg-red-600 text-white px-8 py-3 rounded-md font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 hover:shadow-red-600/40">
-                Get Started
-            </a>
-            <a href="#features" class="bg-white border border-slate-300 text-slate-700 px-8 py-3 rounded-md font-bold hover:border-slate-400 hover:text-slate-900 transition-colors shadow-sm">
-                Learn More
-            </a>
-        </div>
-    </header>
-
-    <!-- Supported Databases -->
-    <section class="border-y border-slate-200 bg-slate-50/50">
-        <div class="container mx-auto px-6 py-12">
-            <p class="text-center text-sm font-semibold text-slate-500 uppercase tracking-widest mb-8">Supported Engines</p>
-            <div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0">
-                <!-- Icons (Text representation for simplicity, matching previous design but adapted for light mode) -->
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl font-bold text-[#00758F]">MySQL</span>
+    <div class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
+        <nav class="glass-panel shadow-glass rounded-full px-8 py-4 flex items-center justify-between w-full max-w-5xl transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center text-white font-mono font-bold text-lg shadow-glow">
+                    P
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl font-bold text-[#336791]">PostgreSQL</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl font-bold text-[#47A248]">MongoDB</span>
-                </div>
+                <span class="font-bold tracking-tight text-slate-900 text-lg">Portal<span class="text-slate-500 font-normal">Migrate</span></span>
             </div>
-        </div>
-    </section>
 
-    <!-- Features Grid -->
-    <section id="features" class="container mx-auto px-6 py-24">
-        <div class="grid md:grid-cols-3 gap-12">
-            <!-- Feature 1 -->
-            <div class="group bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <div class="h-12 w-12 bg-yellow-50 rounded-lg flex items-center justify-center mb-6 border border-yellow-100">
-                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <a href="#architecture" class="hover:text-red-600 transition-colors">Architecture</a>
+                <a href="#features" class="hover:text-red-600 transition-colors">Security</a>
+                <a href="#cli" class="hover:text-red-600 transition-colors">CLI</a>
+                <a href="#docs" class="hover:text-red-600 transition-colors">Docs</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <span class="hidden md:block text-xs font-mono text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-100">v1.0.0 Stable</span>
+                <a href="https://github.com/yourusername/db-migrate-go" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-all shadow-lg shadow-slate-900/20">
+                    Get Binary
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <main class="pt-40 pb-20 container mx-auto px-6 lg:px-12">
+        <div class="flex flex-col lg:flex-row items-center gap-16">
+
+            <div class="lg:w-1/2 space-y-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-white shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">Go-Powered Engine</span>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">Universal Compatibility</h3>
-                <p class="text-slate-600 leading-relaxed">
-                    Seamlessly handle MySQL, PostgreSQL, and MongoDB. The engine abstraction layer ensures consistent behavior regardless of the underlying database technology.
+
+                <h1 class="text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+                    Database Ops, <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Democratized.</span>
+                </h1>
+
+                <p class="text-lg text-slate-600 leading-relaxed max-w-xl">
+                    The cross-database migration tool that treats your data like gold. Backup, encrypt, and restore MySQL, PostgreSQL, and MongoDB with a single binary.
                 </p>
-            </div>
-            <!-- Feature 2 -->
-            <div class="group bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <div class="h-12 w-12 bg-red-50 rounded-lg flex items-center justify-center mb-6 border border-red-100">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <a href="#cli" class="group flex items-center gap-2 border-b-2 border-red-600 pb-1 text-slate-900 font-semibold hover:text-red-600 transition-colors">
+                        <span>Launch Interactive Mode</span>
+                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                    <div class="flex items-center gap-6 text-slate-400 pl-6">
+                        <span class="text-sm font-mono font-bold text-slate-500">MySQL</span>
+                        <span class="text-sm font-mono font-bold text-slate-500">Postgres</span>
+                        <span class="text-sm font-mono font-bold text-slate-500">Mongo</span>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">AES-256 Encryption</h3>
-                <p class="text-slate-600 leading-relaxed">
-                    Security first. Optional AES-256 encryption for your backup files and secure credential storage using your OS native keyring.
-                </p>
             </div>
-            <!-- Feature 3 -->
-            <div class="group bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <div class="h-12 w-12 bg-slate-50 rounded-lg flex items-center justify-center mb-6 border border-slate-200">
-                    <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+
+            <div class="lg:w-1/2 w-full">
+                <div class="relative rounded-xl bg-slate-900 shadow-2xl shadow-slate-900/30 border border-slate-800 overflow-hidden transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                    <div class="bg-slate-800 px-4 py-3 flex items-center gap-2 border-b border-slate-700">
+                        <div class="terminal-dots bg-red-500"></div>
+                        <div class="terminal-dots bg-yellow-500"></div>
+                        <div class="terminal-dots bg-green-500"></div>
+                        <div class="flex-1 text-center text-xs font-mono text-slate-400">user@server: ~/dbmigrate</div>
+                    </div>
+                    <div class="p-6 font-mono text-sm leading-relaxed text-slate-300">
+                        <div class="flex gap-2">
+                            <span class="text-green-400">➜</span>
+                            <span class="text-blue-400">~</span>
+                            <span>./dbmigrate interactive</span>
+                        </div>
+                        <div class="mt-4 text-white font-bold">Portal DB Migration Tool v1.0.0</div>
+                        <div class="text-slate-500 mb-4">Select an operation to perform:</div>
+
+                        <div class="space-y-1">
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">1)</span> Init/Add source server</div>
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">2)</span> Backup all databases</div>
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">3)</span> List backups</div>
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">4)</span> Restore to target</div>
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">5)</span> Push (Sync)</div>
+                            <div class="hover:bg-slate-800 p-1 -mx-1 rounded cursor-pointer transition-colors"><span class="text-red-400 font-bold">6)</span> Exit</div>
+                        </div>
+
+                        <div class="mt-4 flex gap-2 items-center animate-pulse">
+                            <span class="text-slate-500">Choose option [1-6]:</span>
+                            <span class="w-2 h-4 bg-red-500 block"></span>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">Interactive CLI</h3>
-                <p class="text-slate-600 leading-relaxed">
-                    Navigate complex tasks with ease using the interactive numbered menu. No need to remember verbose flags for daily operations.
-                </p>
             </div>
         </div>
-    </section>
+    </main>
 
-    <!-- Workflow / Architecture -->
-    <section id="workflow" class="bg-slate-50 py-24 border-y border-slate-200">
+    <section id="architecture" class="py-24 bg-white border-y border-slate-200">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row items-center gap-12">
-                <div class="md:w-1/2">
-                    <h2 class="text-3xl font-bold text-slate-900 mb-6">Intelligent Workflow</h2>
-                    <p class="text-slate-600 mb-6">
-                        Portal Database Migrator automates the tedious parts of database management. From fetching the data to securely storing it with metadata.
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">The Migration Pipeline</h2>
+                <p class="text-slate-600">Built on a modular <code class="bg-slate-100 px-1 py-0.5 rounded text-red-600 font-mono text-sm">Engine</code> interface. Native tools for reliability, Go for orchestration.</p>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6 relative">
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-10 transform -translate-y-1/2"></div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4 border border-slate-100 group-hover:border-red-200 transition-colors">
+                        <span class="font-mono font-bold text-slate-400 group-hover:text-red-600">01</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-2">Connect</h3>
+                    <p class="text-sm text-slate-500">Securely connects to Source using encrypted credentials stored in OS Keyring.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4 border border-slate-100 group-hover:border-red-200 transition-colors">
+                        <span class="font-mono font-bold text-slate-400 group-hover:text-red-600">02</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-2">Dump & Tag</h3>
+                    <p class="text-sm text-slate-500">Triggers native dumps (pg_dump, mysqldump). Generates JSON metadata with checksums.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4 border border-slate-100 group-hover:border-red-200 transition-colors">
+                        <span class="font-mono font-bold text-slate-400 group-hover:text-red-600">03</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-2">Encrypt & Store</h3>
+                    <p class="text-sm text-slate-500">Compresses to <code class="text-xs bg-slate-100 px-1">.gz</code> and optionally encrypts via AES-256-GCM before writing to disk.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4 border border-slate-100 group-hover:border-red-200 transition-colors">
+                        <span class="font-mono font-bold text-slate-400 group-hover:text-red-600">04</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-2">Restore / Push</h3>
+                    <p class="text-sm text-slate-500">Validates checksums and pushes data to the Target server with transaction safety.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-24 container mx-auto px-6">
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold text-slate-900">Enterprise Grade Features</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 bg-slate-900 rounded-2xl p-8 text-white relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-red-600 opacity-5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                <div class="relative z-10">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-6 backdrop-blur-sm">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Military-Grade Encryption</h3>
+                    <p class="text-slate-400 max-w-lg mb-6 leading-relaxed">
+                        Credentials are never stored in plain text. We utilize the native OS Keyring (macOS Keychain, Windows Credential Manager) for access, and AES-256-GCM for backup file encryption at rest.
                     </p>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <span class="text-green-600 mr-3 mt-1 font-bold">✓</span>
-                            <span class="text-slate-700">Metadata generation (JSON) with timestamps, checksums, and user info.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-green-600 mr-3 mt-1 font-bold">✓</span>
-                            <span class="text-slate-700">Structured storage layout organized by engine and timestamp.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-green-600 mr-3 mt-1 font-bold">✓</span>
-                            <span class="text-slate-700">Push/Restore capabilities to replicate data to target servers.</span>
-                        </li>
+                    <div class="flex gap-3 text-xs font-mono text-slate-500">
+                        <span class="border border-slate-700 px-2 py-1 rounded">AES-256</span>
+                        <span class="border border-slate-700 px-2 py-1 rounded">SHA-256 Checksums</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 hover:border-red-200 transition-colors">
+                <div class="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Smart Metadata</h3>
+                <p class="text-slate-600 text-sm mb-4">Every backup is accompanied by a strictly typed JSON manifest containing engine version, size, timestamps, and origin.</p>
+                <div class="bg-slate-50 p-3 rounded border border-slate-100">
+                    <pre class="text-[10px] text-slate-500 font-mono">
+{
+  "id": "mysql_src_2025...",
+  "checksum": "sha256:e3b0...",
+  "engine": "mysql"
+}</pre>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 hover:border-red-200 transition-colors">
+                <div class="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Structured Storage</h3>
+                <p class="text-slate-600 text-sm">
+                    Files are organized automatically by engine and timestamp. No more messy root directories.
+                </p>
+                <ul class="mt-4 space-y-2 text-xs font-mono text-slate-500">
+                    <li class="flex items-center"><span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>backups/mysql/</li>
+                    <li class="flex items-center"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>backups/postgres/</li>
+                    <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>backups/mongo/</li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-2 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="flex-1">
+                        <div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center mb-6 border border-red-100">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Interactive Numbered CLI</h3>
+                        <p class="text-slate-600 leading-relaxed mb-4">
+                            Forget remembering complex flags. Just run `dbmigrate interactive` and use single keystrokes (1-9) to navigate menus. Built with Go's `term` package for raw input handling.
+                        </p>
+                    </div>
+                    <div class="w-full md:w-1/2 bg-slate-900 rounded-lg p-4 shadow-inner">
+                        <div class="font-mono text-xs text-slate-300">
+                            <div class="mb-2">Choose an option:</div>
+                            <div class="text-white"><span class="text-red-500">1)</span> Init Source</div>
+                            <div class="text-white"><span class="text-red-500">2)</span> Backup DB</div>
+                            <div class="text-slate-500 mt-2">> _</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="cli" class="py-24 bg-slate-900 text-white relative">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-800 pb-8">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Power User Controls</h2>
+                    <p class="text-slate-400">Automate via CI/CD or Cron using standard flags.</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <a href="#" class="text-sm font-mono text-red-400 hover:text-red-300 flex items-center">
+                        View Full Command List <span class="ml-2">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 uppercase tracking-wider">Initialize Source</label>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 font-mono text-sm flex justify-between items-center group cursor-pointer hover:border-slate-700 transition-colors">
+                        <code class="text-blue-300">./dbmigrate init</code>
+                        <span class="opacity-0 group-hover:opacity-100 text-xs text-slate-500">Copy</span>
+                    </div>
+                    <p class="text-sm text-slate-500">Prompts for Host, Port, User, Pass. Encrypts and saves to <code class="bg-slate-800 px-1 rounded text-slate-300">~/.dbmigrate.json</code>.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 uppercase tracking-wider">Backup Specific DB</label>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 font-mono text-sm flex justify-between items-center group cursor-pointer hover:border-slate-700 transition-colors">
+                        <code class="text-green-300">./dbmigrate backup --source mysql-prod --db users_db</code>
+                        <span class="opacity-0 group-hover:opacity-100 text-xs text-slate-500">Copy</span>
+                    </div>
+                    <p class="text-sm text-slate-500">Fetches only the specified database. Use <code class="bg-slate-800 px-1 rounded text-slate-300">--all</code> for full server dump.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 uppercase tracking-wider">Restore to Target</label>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 font-mono text-sm flex justify-between items-center group cursor-pointer hover:border-slate-700 transition-colors">
+                        <code class="text-yellow-300">./dbmigrate restore --backup ./backups/file.sql.gz --target local-dev</code>
+                    </div>
+                    <p class="text-sm text-slate-500">Unzips, verifies checksum, and pipes output to target database engine.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 uppercase tracking-wider">List Backups</label>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 font-mono text-sm flex justify-between items-center group cursor-pointer hover:border-slate-700 transition-colors">
+                        <code class="text-purple-300">./dbmigrate list --json</code>
+                    </div>
+                    <p class="text-sm text-slate-500">Lists all local backups with their ID, Size, and Creation Timestamp.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+    </section>
+
+    <footer class="bg-white border-t border-slate-200 pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-6 h-6 bg-red-600 rounded flex items-center justify-center text-white font-bold text-xs">P</div>
+                        <span class="font-bold text-slate-900">PortalMigrate</span>
+                    </div>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4">
+                        Open source database mobility tool designed for simplicity, security, and speed.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-slate-400 hover:text-slate-900 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="#" class="hover:text-red-600">Download Binary</a></li>
+                        <li><a href="#" class="hover:text-red-600">Documentation</a></li>
+                        <li><a href="#" class="hover:text-red-600">Changelog</a></li>
                     </ul>
                 </div>
-                <div class="md:w-1/2 bg-white p-6 rounded-xl border border-slate-200 shadow-xl">
-                    <div class="flex items-center space-x-2 mb-4 border-b border-slate-100 pb-2">
-                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                    </div>
-                    <pre class="font-mono text-sm text-slate-600 overflow-x-auto leading-relaxed">
-backups/
-  ├── mysql/
-  │   └── source-ip_2025-11-29/
-  │       ├── metadata.json
-  │       └── db1_2025-11-29.sql.gz
-  ├── postgres/
-  │   └── source-ip_2025-11-29/
-  │       ├── metadata.json
-  │       └── db_public.sql.gz
-  └── mongo/
-      └── source-ip_2025-11-29/
-          ├── metadata.json
-          └── archive.gz</pre>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Supported DBs</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="#" class="hover:text-red-600">MySQL 5.7+</a></li>
+                        <li><a href="#" class="hover:text-red-600">PostgreSQL 12+</a></li>
+                        <li><a href="#" class="hover:text-red-600">MongoDB 4.0+</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="#" class="hover:text-red-600">MIT License</a></li>
+                        <li><a href="#" class="hover:text-red-600">Privacy Policy</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Usage Section -->
-    <section id="usage" class="container mx-auto px-6 py-24">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-slate-900">Command Line Interface</h2>
-            <p class="text-slate-600 mt-4">Simple, intuitive, and powerful.</p>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Code Block 1 -->
-            <div class="bg-slate-900 rounded-lg p-6 border border-slate-800 shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-sm font-bold text-yellow-400">Interactive Mode</span>
-                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">Shell</span>
+            <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-slate-400">© 2025 Portal Database Migrator. Maintained by the DevOps Team.</p>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-xs font-mono text-slate-500">System Operational</span>
                 </div>
-                <pre class="font-mono text-sm text-slate-300 whitespace-pre-wrap">
-$ dbmigrate interactive
-
-1) Init/Add source server
-2) Backup all databases
-3) List backups
-4) Restore a backup
-5) Exit
-
-<span class="text-slate-500"># Just press the number key to proceed</span>
-</pre>
-            </div>
-
-            <!-- Code Block 2 -->
-            <div class="bg-slate-900 rounded-lg p-6 border border-slate-800 shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-sm font-bold text-red-400">Direct Commands</span>
-                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">Shell</span>
-                </div>
-                <pre class="font-mono text-sm text-slate-300 whitespace-pre-wrap">
-<span class="text-slate-500"># Backup all databases</span>
-$ dbmigrate backup --all
-
-<span class="text-slate-500"># Restore to a target</span>
-$ dbmigrate restore \
-  --backup ./backups/mysql/db.sql.gz \
-  --target target-id
-
-<span class="text-slate-500"># List available backups</span>
-$ dbmigrate list</pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-slate-200 bg-white py-12">
-        <div class="container mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-6 md:mb-0">
-                <span class="text-xl font-bold text-slate-900">Portal Database <span class="text-red-600">Migrator</span></span>
-                <p class="text-sm text-slate-500 mt-2">© 2025 All rights reserved.</p>
-            </div>
-            <div class="flex space-x-6 text-sm text-slate-500">
-                <a href="#" class="hover:text-red-600 transition-colors">Documentation</a>
-                <a href="#" class="hover:text-red-600 transition-colors">Privacy</a>
-                <a href="#" class="hover:text-red-600 transition-colors">Contact</a>
             </div>
         </div>
     </footer>
