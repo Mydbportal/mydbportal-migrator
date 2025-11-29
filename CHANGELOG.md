@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Updated README with usage instructions and fixed build errors.
 - Added initial README.md.
-- Removed reference to .gemini/config.json from README.
+- Removed reference to unnecessary configuration from README.
 
 ### Chores
 - Initialize project structure and dependencies.
