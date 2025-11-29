@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retry logic (3 retries) for PostgreSQL backups to handle transient network errors (e.g., SSL SYSCALL error).
 - Metadata now records per-file status ("success" or "failed") and error messages.
 - Resolved MongoDB authentication error by passing password explicitly via flag instead of unreliable stdin piping.
+- Added retry logic (3 retries) for MongoDB backups to handle transient network issues (e.g., server selection timeout).
 
 ### Removed
 
